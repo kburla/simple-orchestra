@@ -1,0 +1,48 @@
+# generic metadata
+prefect-version:
+name:
+
+# preparation steps
+build:
+push:
+
+# runtime steps
+pull:
+
+# deployment configurations
+deployments:
+  # base metadata
+- name:
+  version:
+  tags: []
+  description:
+  schedule:
+
+  # flow-specific fields
+  entrypoint:
+  parameters: {}
+
+  # infra-specific fields
+  work_pool:
+    name:
+    work_queue_name:
+    job_variables: {}
+- name: default
+  version:
+  tags: []
+  concurrency_limit:
+  description:
+  entrypoint: pipeline.py:simple_pipeline
+  parameters: {}
+  work_pool:
+    name: firstpool
+    work_queue_name:
+    job_variables: {}
+  schedules:
+  - interval: 3600.0
+    anchor_date: '2025-01-19T23:08:47.859051+00:00'
+    timezone: UTC
+    active: true
+  pull:
+  - prefect.deployments.steps.set_working_directory:
+      directory: /home/kburla/src/simple-orchestra
