@@ -1,43 +1,46 @@
 # pipeline.py
-from prefect import task, flow
+from prefect import task, flow, get_run_logger
 import requests
 import hashlib
+import json
 
 # Step 1: Define a task to fetch data (this could be any kind of data)
 @task(retries=3, retry_delay_seconds=5, timeout_seconds=10)
-def fetch_data():
-    url = "https://jsonplaceholder.typicode.com/todos/1"
+def fetch_data(url):
+    logger = get_run_logger()
+    logger.info(f"Fetching data from {url}")
     response = requests.get(url)
     response.raise_for_status()  # Ensure this throws an error on failure
     return response.json()
 
-# Step 2: Transform the fetched data (capitalize the title)
-@task
-def transform_data(data):
-    transformed_title = data['title'].capitalize()
-    data['title'] = transformed_title
-    return data
-
-# Step 3: Process the data (extract the title)
 @task
 def process_data(data):
-    return data['title']
+    logger = get_run_logger()
+    logger.info("Transforming data")
 
-# Step 4: Save the result
+    first_words = []
+    for post in data:
+        first_word = post['body'].split()[0]
+        first_words.append(first_word)
+    
+    return first_words
+
+# Step 4: Save the result to a file
 @task
-def save_results(result):
-    with open("result.txt", "w") as file:
+def save_results(result, filename):
+    logger = get_run_logger()
+    logger.info(f"Saving results to {filename}")
+    with open(filename, "w") as file:
         file.write(f"Processed data: {result}")
     return "Data saved successfully!"
 
 # Step 5: Define the flow
 @flow
-def simple_pipeline():
-    data = fetch_data()
-    transformed_data = transform_data(data)
-    processed_data = process_data(transformed_data)
-    save_results(processed_data)
+def simple_pipeline(url: str, filename: str):
+    data = fetch_data(url)
+    transformed_data = process_data(data)
+    save_results(transformed_data, filename)
 
-# Step 5: Run the flow locally
+# Step 6: Run the flow locally
 if __name__ == "__main__":
-    simple_pipeline()
+    simple_pipeline(url="https://jsonplaceholder.typicode.com/posts", filename="result.txt")
