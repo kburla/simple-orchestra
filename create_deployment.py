@@ -13,6 +13,6 @@ if __name__ == "__main__":
             "url": "https://jsonplaceholder.typicode.com/posts",
             "filename": "result.json"
         },
-        work_pool_name="my-work-pool",
+        work_pool_name="firstpool",
         cron="0 * * * *",  # Run every hour
     )
