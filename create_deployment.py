@@ -6,7 +6,7 @@ SOURCE_REPO="https://github.com/kburla/simple-orchestra.git"
 if __name__ == "__main__":
     flow.from_source(
         source=SOURCE_REPO,
-        entrypoint="my_workflow.py:simple_pipeline",  # Correct the path here
+        entrypoint="my_workflow.py:show_stars",  # Correct the path here
     ).deploy(
         name="my-first-deployment",
         parameters={
